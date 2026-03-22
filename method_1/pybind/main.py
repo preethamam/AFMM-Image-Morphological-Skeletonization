@@ -29,18 +29,22 @@ def process_image(image_path):
     s2 = time.time()
     print("AFMM Skelgrad time taken: ", s2-s1)
     
-    return skg, rad, img
+    return skg, rad, img, img_array
 
 def main():
     
     # Image path
-    image_path = "../../images/example.png"
+    # image_path = r"H:\Project MegaCRACK-RoboCRACK\Real World Data\USC PhD\Semantic Segmentation\Dataset 6 - Cracks-1K (448 x 252)\Pixel Labels\test\2017_01_25_16_06_44_2724.png" #"../../images/example.png"        
+    # image_path = r"H:\Project MegaCRACK-RoboCRACK\Real World Data\USC PhD\Semantic Segmentation\Dataset 1 - Cracks-200\Pixel Labels\train\41.png"
+    image_path = r"H:\Project MegaCRACK-RoboCRACK\Real World Data\USC PhD\Semantic Segmentation\Dataset 6 - Cracks-1K (448 x 252)\Pixel Labels\test\2017_01_26_12_57_23_1076.png"
+    # Process image
+    skg, rad, img, img_array = process_image(image_path)
     
     # Threshold for binary conversion
-    threshold = 100
-    
-    # Process image
-    skg, rad, img = process_image(image_path)
+    # threshold = 15    
+    SKELETON_GRAD_THRESHOLD = 0.035
+    threshold = int(np.ceil(max(img_array.shape) * SKELETON_GRAD_THRESHOLD))
+    print("Skeleton Gradient Threshold: ", threshold)
     
     # perform skeletonization
     skeleton = skeletonize(skg > threshold)

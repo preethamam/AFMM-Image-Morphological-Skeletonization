@@ -8,100 +8,25 @@ class CustomBuildExt(build_ext):
     """Custom build extension for handling compiler flags"""
     def build_extensions(self):
         compiler_type = self.compiler.compiler_type
-        
+
         for ext in self.extensions:
             if compiler_type == 'msvc':
-                # MSVC specific flags
-                cpp_flags = [
-                    '/O2',          # Optimize for speed
-                    '/W3',          # Warning level
-                    '/GL',          # Whole program optimization
-                    '/EHsc',        # Exception handling model
-                    '/std:c++17',   # C++ 17 standard
+                ext.extra_compile_args = [
+                    '/O2', '/W3', '/GL', '/EHsc', '/std:c++17',
                 ]
-                c_flags = [
-                    '/O2',          # Optimize for speed
-                    '/W3',          # Warning level
-                    '/GL',          # Whole program optimization
-                ]
-                ext.extra_link_args = [
-                    '/LTCG',        # Link-time code generation
-                ]
+                ext.extra_link_args = ['/LTCG']
                 ext.define_macros.append(('WIN32', '1'))
-                
-                # Set source-specific compiler flags
-                for source in ext.sources:
-                    if source.endswith('.cpp'):
-                        self._set_source_flags(source, cpp_flags)
-                    elif source.endswith('.c'):
-                        self._set_source_flags(source, c_flags)
-                
             else:  # gcc, mingw, clang
-                cpp_flags = [
-                    '-O3',              # Highest optimization level
-                    '-Wall',            # All warnings
-                    '-Wextra',          # Extra warnings
-                    '-std=c++17',       # C++ 17 standard
-                    '-fvisibility=hidden',
-                    '-fPIC',           # Position independent code
+                ext.extra_compile_args = [
+                    '-O3', '-Wall', '-Wextra', '-std=c++17',
+                    '-fvisibility=hidden', '-fPIC',
                 ]
-                c_flags = [
-                    '-O3',             # Highest optimization level
-                    '-Wall',           # All warnings
-                    '-fPIC',           # Position independent code
-                ]
-                ext.extra_link_args = [
-                    '-lpthread',        # POSIX threading
-                    '-lm',             # Math library
-                ]
-                
-                # Set source-specific compiler flags
-                for source in ext.sources:
-                    if source.endswith('.cpp'):
-                        self._set_source_flags(source, cpp_flags)
-                    elif source.endswith('.c'):
-                        self._set_source_flags(source, c_flags)
-                
-                # Platform-specific additions
-                if platform.system() == "Darwin":  # macOS
-                    if source.endswith('.cpp'):
-                        self._append_source_flags(source, ['-stdlib=libc++'])
-                    ext.extra_link_args.extend(['-stdlib=libc++'])
-                    
+                ext.extra_link_args = ['-lpthread', '-lm']
+                if platform.system() == 'Darwin':
+                    ext.extra_compile_args.append('-stdlib=libc++')
+                    ext.extra_link_args.append('-stdlib=libc++')
+
         build_ext.build_extensions(self)
-    
-    def _set_source_flags(self, source, flags):
-        if not hasattr(self, '_source_flags'):
-            self._source_flags = {}
-        self._source_flags[source] = flags.copy()
-    
-    def _append_source_flags(self, source, flags):
-        if not hasattr(self, '_source_flags'):
-            self._source_flags = {}
-        if source not in self._source_flags:
-            self._source_flags[source] = []
-        self._source_flags[source].extend(flags)
-    
-    def build_extension(self, ext):
-        sources = ext.sources
-        if sources is None or not len(sources):
-            return
-        
-        # Apply source-specific flags if any
-        if hasattr(self, '_source_flags'):
-            for source in sources:
-                if source in self._source_flags:
-                    extra_args = self._source_flags[source]
-                    if self.compiler.compiler_type == 'msvc':
-                        if source.endswith('.c'):
-                            self.compiler.compile([source], extra_postargs=extra_args)
-                        else:
-                            self.compiler.compile([source], extra_postargs=extra_args)
-                    else:
-                        self.compiler.compile([source], extra_postargs=extra_args)
-        
-        # Continue with regular build
-        build_ext.build_extension(self, ext)
 
 # Define source files
 sources = [
