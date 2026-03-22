@@ -4,6 +4,9 @@ authors:
   - family-names: Manjunatha
     given-names: Preetham
     orcid: "https://orcid.org/0000-0002-0791-2155"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.19155474"
 keywords:
   - AFMM
   - skeletonization
