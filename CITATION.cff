@@ -1,0 +1,23 @@
+cff-version: "1.2.0"
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Manjunatha
+    given-names: Preetham
+    orcid: "https://orcid.org/0000-0002-0791-2155"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.19154892"
+keywords:
+  - AFMM
+  - skeletonization
+  - fast marching method
+  - image processing
+  - centerline extraction
+  - python
+  - cython
+  - pybind
+title: "Augmented Fast Marching Method (AFMM) Image Morphological Skeletonization"
+version: "1.0.0"
+date-released: 2026-03-21
+license: MIT
+repository-code: "https://github.com/preethamam/AFMM-Image-Morphological-Skeletonization"
